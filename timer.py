@@ -1,7 +1,7 @@
 from time import perf_counter, time
 
 
-class restCalculator:
+class RestCalculator:
     def __init__(self, interval: float, coefficient: float = 1.5) -> None:
         self._start = 0.0
         self._interval = interval
@@ -25,7 +25,6 @@ class restCalculator:
 
 class SleepCalculator:
     def __init__(self, interval: float, coefficient: float = 1.1) -> None:
-        self._start_count = 0.0
         self._interval = interval
         self._time_threshold = coefficient * interval
         self._prev_count = 0.0
@@ -42,28 +41,28 @@ class SleepCalculator:
         count = perf_counter()
         _time = time()
         if count >= self._prev_count:
-            time_sleep, has_exceeded = self._calc(
+            sleep_time, has_exceeded = self._calc(
                 count, self._prev_count, self._start_count
             )
         else:
-            time_sleep, has_exceeded = self._calc(
+            sleep_time, has_exceeded = self._calc(
                 _time, self._prev_time, self._start_time
             )
         if has_exceeded:
             self._set_start(count, _time)
         self._prev_count = count
         self._prev_time = _time
-        return time_sleep
+        return sleep_time
 
     def _calc(self, now: float, prev: float, start: float) -> tuple[float, bool]:
         diff = now - prev
         if diff < self._time_threshold:
-            time_sleep = self._interval - (now - start) % self._interval
+            sleep_time = self._interval - (now - start) % self._interval
             has_exceeded = False
         else:
-            time_sleep = 0.0
+            sleep_time = 0.0
             has_exceeded = True
-        return time_sleep, has_exceeded
+        return sleep_time, has_exceeded
 
     def _set_start(self, count: float, _time: float) -> None:
         self._start_count = count
